@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>QR Code Generator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap">
+
+    <style>
+        body{
+            background-color: #e0e7f1;
+            display: flex;
+            font-family: 'Poppins', sans-serif;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container{
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .container h1{
+            margin: 0px;
+            font-size: 3em;
+            color: #333;
+        }
+        form{
+            display: flex;
+            flex-direction: column;
+        }
+        label{
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 1em;
+            text-align: left;
+        }
+        input[type='text'],
+        select{
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+            outline: none;
+            transition: all 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus,
+        select{
+            border-color: #6A82FB;
+            box-shadow: 0 0 5px rgba(106, 130, 251, 0.5);
+        }
+        .container button{
+            margin-top: 20px;
+            padding: 12px;
+            border: none;
+            background: #FC5C7D;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            font-size: 1em;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        .container button:hover{
+            background: #6A82FB;
+        }
+        .dwnBadge{
+            display: none;
+            margin-top: 20px;
+            padding: 12px;
+            background: #001f3f;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+        @media (max-width:600px){
+            .container{
+                padding: 20px;
+                max-width: 90%;
+            }
+            h1{
+                font-size: 1.5em;
+            }
+            bottom{
+                font-size: 0.9em;
+                padding: 10px;
+            }
+            input[type="text"],
+            select{
+                font-size: 0.9em;
+                padding: 8px;
+            }
+        }
+        .badge{
+            width: 280px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: none;
+            text-align: center;
+            background-color: #fff;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+        .badge-header{
+            background-color: #001f3f;
+            background: linear-gradient(315deg, #313c47, #001f3f);
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+            color: white;
+        }
+        .badge-header::after{
+            content: "";
+            position: relative;
+            top: -20px;
+            left: -40px;
+            width: 20px;
+            height: 180%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 30%, transparent 10.01%);
+            background-size: 10px 10px;
+            transform: rotate(52deg);
+            opacity: 0.8;
+        }
+        .badge-header::before{
+            content: "";
+            position: absolute;
+            background-color: #fff;
+            width: 12px;
+            height: 12px;
+            border-radius: 20px;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .badge-header h1{
+            margin: 0;
+            font-size: 18px;
+        }
+        .badge-body{
+            display: flex;
+            padding: 20px;
+            flex-direction: column;
+        }
+        .badge-body h2{
+            font-size: 22px;
+            margin: 0;
+            color: #333;
+        }
+        .badge-body p{
+            font-size: 14px;
+            margin: 0;
+            color: #777;
+            font-weight: 600;
+        }
+        .badge-body h3{
+            color: #1d72b8;
+            font-size: 11px;
+            margin: 0;
+        }
+        .badge-qr{
+            margin: 20px 0;
+        }
+        .badge-footer{
+            color: white;
+            background-color: #007bff;
+            padding: 15px;
+        }
+        .badge-footer p{
+            margin: 0;
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="formContainer" class="container">
+        <h1>QR Code Generator</h1>
+        <form id="badgeForm">
+            <label for="eventname">Event Name:</label>
+            <input type="text" id="eventname" required>
+
+            <label for="name">Name:</label>
+            <input type="text" id="name" required>
+
+            <label for="designation">Designation:</label>
+            <input type="text" id="designation" required>
+
+            <label for="company">Company:</label>
+            <input type="text" id="company" required>
+
+            <label for="access">Access Level:</label>
+            <select id="access" required>
+                <option value="attendee">Attendee</option>
+                <option value="vip">VIP</option>
+            </select>
+            <button type="submit">Badge Generate</button>
+        </form>
+    </div>
+
+    <div id="badge" class="badge">
+        <div class="badge-header">
+            <h1 id="badgeEvent"></h1>
+        </div>
+        <div class="badge-body">
+            <h2 id="badgeName"></h2>
+            <p id="badgeDesignation"></p>
+            <h3 id="badgecontainer"></h3>
+        </div>
+        <div id="qrcode" class="badge-qr">
+        </div>
+        <div id="badge-footer" class="badge-footer">
+            <div id="badgeAccess">Attendee</div>
+        </div>
+    </div>
+
+    <button id="dwnBadge" class="dwnBadge">Download Badge</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.js"></script>
+
+    <script>
+        const badgeForm = document.getElementById('badgeForm');
+        const DownloadBadge = document.getElementById('dwnBadge')
+
+        badgeForm.addEventListener('submit', function(event){
+            event.preventDefault()
+
+            const formContainer = document.getElementById("formContainer")
+            formContainer.style.display = "none";
+            const eventname = document.getElementById("eventname").value
+            const name = document.getElementById('name').value
+            const designation = document.getElementById("designation").value;
+            const company = '@'+document.getElementById("company").value
+            const access = document.getElementById("access").value
+            
+            const id = 'ID' + Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+
+            $("#badgeEvent").text(eventname)
+            $("#badgeName").text(name)
+            $("#badgeDesignation").text(designation);
+            $("#badgecontainer").text(company)
+            $("#badgeAccess").text(access)
+
+            $("#qrcode").empty()
+
+            $("#qrcode").qrcode({
+                text:`ID: ${id}\nEvent: ${eventname}\nName: ${name}\nDesignation: ${designation}\nCompany: ${company}\nAccess: ${access}`,
+                width: 128,
+                height: 128
+            });
+
+            $("#badge").css('display','block')
+            $('#dwnBadge').css('display','block')
+        });
+
+        DownloadBadge.addEventListener('click',function(e){
+
+            e.preventDefault()
+
+            const badgeElement = document.getElementById('badge');
+            htmlToImage.toPng(badgeElement)
+            .then(function(dataurl){
+                const link = document.createElement('a')
+                link.download = 'badge.png';
+                link.href = dataurl;
+                link.click()
+            })
+            .catch(function(error){
+                console.error("Error converting HTML to image:",error)
+            })
+        })
+    </script>
+</body>
+</html>
